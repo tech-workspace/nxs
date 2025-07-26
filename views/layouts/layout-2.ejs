@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>NexusPlater</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link rel="icon" type="image/x-icon" href="/images/logo-icon.png" />
+    <!-- <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" /> -->
+    <link rel="stylesheet" href="/css/main.css" />
+    <noscript><link rel="stylesheet" href="/css/noscript.css" /></noscript>
+  </head>
+  <body class="is-preload">
+    <!-- Start Wrapper -->
+    <div id="wrapper" class="fade-in">
+      <%- include('../partials/header-2.ejs') %> <%- body %> <%-
+      include('../partials/footer-1.ejs') %>
+    </div>
+    <!-- Start Wrapper -->
+  </body>
+
+  <!-- Start Scripts -->
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.scrollex.min.js"></script>
+  <script src="/js/jquery.scrolly.min.js"></script>
+  <script src="/js/browser.min.js"></script>
+  <script src="/js/breakpoints.min.js"></script>
+  <script src="/js/util.js"></script>
+  <script src="/js/main.js"></script>
+
+  <script>
+    window.onload = function clock() {
+      var d = new Date();
+      var date = d.getUTCDate();
+      var month = d.getUTCMonth();
+      var year = d.getUTCFullYear();
+      var monthArr = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      month = monthArr[month];
+      document.getElementById("spanSysDate").innerHTML =
+        date + " " + month + " " + year;
+        document.getElementById("spanSysYear").innerHTML = year;
+    };
+  </script>
+  <!-- End Scripts -->
+</html>
