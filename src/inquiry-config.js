@@ -32,7 +32,7 @@ const InquirySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    inquiry: {
+    message: {
       type: String,
       required: true,
     },

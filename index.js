@@ -103,7 +103,7 @@ app.post("/submitInquiry", async (req, res) => {
     name: req.body.name,
     mobile: req.body.mobile,
     email: req.body.email,
-    inquiry: req.body.inquiry,
+    message: req.body.message,
     createDate: new Date(),
   };
 
