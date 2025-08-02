@@ -36,6 +36,10 @@ const InquirySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isread: {
+      type: Boolean,
+      required: false,
+    },
   },
   {
     timestamps: true,

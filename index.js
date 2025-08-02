@@ -107,6 +107,7 @@ app.post("/submitInquiry", async (req, res) => {
     mobile: req.body.mobile,
     email: req.body.email,
     message: req.body.message,
+    isread: false, // Default value for isread
     createDate: new Date(),
   };
 
