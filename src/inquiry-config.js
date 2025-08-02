@@ -39,6 +39,7 @@ const InquirySchema = new mongoose.Schema(
     isread: {
       type: Boolean,
       required: false,
+      default: false, // Default value for isread
     },
   },
   {
