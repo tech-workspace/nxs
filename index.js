@@ -42,6 +42,9 @@ app.get("/sent-already", (req, res) => {
 app.get("/sent-successfully", (req, res) => {
   res.render("sent-successfully", { layout: "./layouts/layout-3.ejs" });
 });
+app.use(function (req, res, next) {
+  res.status(404).render("404", { layout: "./layouts/layout-3.ejs" });
+});
 
 const now = new Date();
 const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
