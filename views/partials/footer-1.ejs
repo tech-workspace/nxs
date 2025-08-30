@@ -1,7 +1,7 @@
 <!-- Footer -->
 <footer id="footer">
   <section>
-    <form method="post" action="/submitInquiry">
+    <form method="post" action="/submitInquiry" id="inquiryForm" novalidate>
       <div class="fields">
         <div class="field">
           <label for="name">Name</label>
@@ -13,6 +13,7 @@
             maxlength="100"
             required
           />
+          <div class="error-message" id="nameError"></div>
         </div>
         <div class="field">
           <label for="mobile">Mobile</label>
@@ -21,22 +22,26 @@
             inputmode="numeric"
             name="mobile"
             id="mobile"
-            placeholder="Mobile (Numbers Only)"
-            pattern="\d*"
+            placeholder="Mobile (e.g. 0501234567, or +971501234567)"
             maxlength="14"
+            pattern="[\d+]+"
+            oninput="this.value = this.value.replace(/[^\d+]/g, '')"
+            onkeypress="return /[\d+]/.test(event.key)"
             required
           />
+          <div class="error-message" id="mobileError"></div>
         </div>
         <div class="field">
           <label for="email">Email</label>
           <input
-            type="text"
+            type="email"
             name="email"
             id="email"
             placeholder="Email"
             maxlength="30"
             required
           />
+          <div class="error-message" id="emailError"></div>
         </div>
         <div class="field">
           <label for="message">Message</label>
@@ -48,10 +53,11 @@
             placeholder="Put your inquiry here..."
             required
           ></textarea>
+          <div class="error-message" id="messageError"></div>
         </div>
       </div>
       <ul class="actions">
-        <li><input type="submit" value="Send Inquiry" /></li>
+        <li><input type="submit" value="Send Inquiry" id="submitBtn" /></li>
       </ul>
     </form>
     <h5 id="responseMessage"></h5>
@@ -112,6 +118,193 @@
     </section>
   </section>
 </footer>
+
+<script>
+// Form validation for UAE mobile numbers and email
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('inquiryForm');
+  const mobileInput = document.getElementById('mobile');
+  const emailInput = document.getElementById('email');
+  const nameInput = document.getElementById('name');
+  const messageInput = document.getElementById('message');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // UAE mobile number validation function
+  function validateUAEMobile(mobile) {
+    // Remove all non-digit characters except +
+    const cleanMobile = mobile.replace(/[^\d+]/g, '');
+    
+    // UAE mobile number patterns:
+    // Local format: 0501234567, 0511234567, 0521234567, 0541234567, 0551234567, 0561234567
+    // International format: +971501234567, +971511234567, etc.
+    // Also accepts: 0501234567 (10 digits starting with 0)
+    
+    // Check if it's a valid UAE mobile number
+    if (cleanMobile.startsWith('+971') && cleanMobile.length === 13) {
+      // International format: +971501234567, +971568863388
+      const prefix = cleanMobile.substring(4, 6);
+      return ['50', '51', '52', '54', '55', '56'].includes(prefix);
+    } else if (cleanMobile.startsWith('971') && cleanMobile.length === 12) {
+      // International format without +: 971501234567, 971568863388
+      const prefix = cleanMobile.substring(3, 5);
+      return ['50', '51', '52', '54', '55', '56'].includes(prefix);
+    } else if (cleanMobile.startsWith('0') && cleanMobile.length === 10) {
+      // Local format: 0501234567
+      const prefix = cleanMobile.substring(1, 3);
+      return ['50', '51', '52', '54', '55', '56'].includes(prefix);
+    } else if (cleanMobile.length === 9) {
+      // Local format without 0: 501234567, 568863388
+      const prefix = cleanMobile.substring(0, 2);
+      return ['50', '51', '52', '54', '55', '56'].includes(prefix);
+    }
+    
+    return false;
+  }
+
+  // Email validation function
+  function validateEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  // Clear error message
+  function clearError(elementId) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+      errorElement.textContent = '';
+      errorElement.style.display = 'none';
+    }
+  }
+
+  // Show error message
+  function showError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+  }
+
+    // Real-time mobile validation
+  mobileInput.addEventListener('input', function() {
+    // Remove any non-digit characters except + that might have been entered
+    this.value = this.value.replace(/[^\d+]/g, '');
+    
+    clearError('mobileError');
+    const mobile = this.value.trim();
+    
+
+    
+    if (mobile && !validateUAEMobile(mobile)) {
+      showError('mobileError', 'Please enter a valid UAE mobile number (e.g. 0501234567, or +971501234567)');
+    }
+  });
+
+  // Prevent non-numeric and non-plus characters from being typed
+  mobileInput.addEventListener('keypress', function(e) {
+    const char = String.fromCharCode(e.which);
+    if (!/[\d+]/.test(char)) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // Prevent paste of invalid characters
+  mobileInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    const cleanText = pastedText.replace(/[^\d+]/g, '');
+    this.value = cleanText;
+  });
+
+  // Real-time email validation
+  emailInput.addEventListener('input', function() {
+    clearError('emailError');
+    const email = this.value.trim();
+    
+    if (email && !validateEmail(email)) {
+      showError('emailError', 'Please enter a valid email address');
+    }
+  });
+
+  // Real-time name validation
+  nameInput.addEventListener('input', function() {
+    clearError('nameError');
+    const name = this.value.trim();
+    
+    if (name && name.length < 2) {
+      showError('nameError', 'Name must be at least 2 characters long');
+    }
+  });
+
+  // Real-time message validation
+  messageInput.addEventListener('input', function() {
+    clearError('messageError');
+    const message = this.value.trim();
+    
+    if (message && message.length < 10) {
+      showError('messageError', 'Message must be at least 10 characters long');
+    }
+  });
+
+  // Form submission validation
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let isValid = true;
+    const mobile = mobileInput.value.trim();
+    const email = emailInput.value.trim();
+    const name = nameInput.value.trim();
+    const message = messageInput.value.trim();
+
+    // Clear all previous errors
+    clearError('nameError');
+    clearError('mobileError');
+    clearError('emailError');
+    clearError('messageError');
+
+    // Validate name
+    if (!name || name.length < 2) {
+      showError('nameError', 'Name must be at least 2 characters long');
+      isValid = false;
+    }
+
+    // Validate mobile
+    if (!mobile) {
+      showError('mobileError', 'Mobile number is required');
+      isValid = false;
+    } else if (!validateUAEMobile(mobile)) {
+      showError('mobileError', 'Please enter a valid UAE mobile number (e.g. 0501234567, or +971501234567)');
+      isValid = false;
+    }
+
+    // Validate email
+    if (!email) {
+      showError('emailError', 'Email is required');
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      showError('emailError', 'Please enter a valid email address');
+      isValid = false;
+    }
+
+    // Validate message
+    if (!message || message.length < 10) {
+      showError('messageError', 'Message must be at least 10 characters long');
+      isValid = false;
+    }
+
+    // If validation passes, submit the form
+    if (isValid) {
+      // Disable submit button to prevent double submission
+      submitBtn.disabled = true;
+      submitBtn.value = 'Sending...';
+      
+      // Submit the form
+      form.submit();
+    }
+  });
+});
+</script>
 
 <!-- Copyright -->
 <div id="copyright">

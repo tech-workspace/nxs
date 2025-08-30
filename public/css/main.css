@@ -2388,6 +2388,35 @@ form > .fields > .field.quarter {
   width: calc(25% - 0.375rem);
 }
 
+/* Error message styles for form validation */
+.error-message {
+  display: none;
+  color: #e74c3c;
+  font-size: 0.75rem;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  font-weight: 400;
+  margin-top: 0.5rem;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.error-message:not(:empty) {
+  display: block;
+}
+
+/* Style for invalid inputs */
+.field input:invalid,
+.field textarea:invalid {
+  border-color: #e74c3c;
+}
+
+.field input:focus:invalid,
+.field textarea:focus:invalid {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
 @media screen and (max-width: 480px) {
   form > .fields {
     width: calc(100% + 3rem);
