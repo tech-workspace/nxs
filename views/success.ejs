@@ -1,0 +1,49 @@
+<article class="post featured">
+  <header class="major">
+    <div class="success-icon">
+      ✅
+    </div>
+    <h2><%= messages.success.inquirySubmitted %></h2>
+    <p><%= messages.success.thankYouMessage %></p>
+  </header>
+  
+  <% if (typeof inquiry !== 'undefined' && inquiry) { %>
+  <div class="content">
+    <div class="success-details">
+      <div class="detail-item">
+        <span class="detail-label"><%= messages.success.referenceId %>:</span>
+        <span class="detail-value">#<%= inquiry._id.toString().slice(-8) %></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label"><%= messages.success.submittedOn %>:</span>
+        <span class="detail-value"><%= new Date().toLocaleString() %></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Name:</span>
+        <span class="detail-value"><%= inquiry.name %></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Email:</span>
+        <span class="detail-value"><%= inquiry.email %></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Mobile:</span>
+        <span class="detail-value"><%= inquiry.mobile %></span>
+      </div>
+    </div>
+  </div>
+  <% } %>
+  
+  <ul class="actions special">
+    <li><a href="/" class="button large"><%= messages.navigation.backToHome %></a></li>
+  </ul>
+  
+  <div class="contact-info">
+    <p><%= messages.success.contactInfo %></p>
+    <p>
+      <%= messages.contact.emailLabel %> <a href="mailto:<%= messages.contact.email %>"><%= messages.contact.email %></a> | 
+      <%= messages.contact.phoneLabel %> <a href="tel:<%= messages.contact.phone %>"><%= messages.contact.phone %></a>
+    </p>
+  </div>
+</article>
+</div>

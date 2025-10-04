@@ -1,0 +1,32 @@
+{
+    "name": "Nexus Plater - Corporate Gifts and Promotional Products UAE",
+    "short_name": "Nexus Plater",
+    "description": "High-quality corporate gifts and promotional products in UAE with fast turnaround and competitive pricing. Custom branded merchandise, employee gifts, and promotional items.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1e252d",
+    "theme_color": "#18bfef",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/images/logo-icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/logo-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "business",
+        "shopping",
+        "corporate"
+    ],
+    "lang": "en-AE",
+    "scope": "/",
+    "prefer_related_applications": false
+}

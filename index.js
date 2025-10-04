@@ -3,115 +3,163 @@ require("dotenv").config();
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const path = require("path");
-const user_collection = require("./src/user-config");
+const multer = require("multer");
 const inquiry_collection = require("./src/inquiry-config");
+const { validateInquiryData } = require("./src/validation");
+const messages = require("./src/messages");
+const {
+  helmetConfig,
+  formSubmissionLimiter,
+  sanitizeInput,
+  inquiryValidationRules,
+  checkValidationResults,
+  xssProtection
+} = require("./src/security");
 
-const bcrypt = require("bcrypt");
-const { clear } = require("console");
+const {
+  AppError,
+  errorHandler,
+  catchAsync,
+  notFound,
+  handleValidationError,
+  logError
+} = require("./src/errorHandler");
+
 
 const app = express();
+
+// Security middleware (must be applied early)
+app.use(helmetConfig);
+app.use(xssProtection);
+
+// Input sanitization middleware
+app.use(sanitizeInput);
+
 app.use(expressLayouts);
-app.set("layout", "./layouts/layout-1.ejs");
+app.set("layout", "./layouts/layout.ejs");
+app.set("layout extractScripts", true);
+app.set("layout extractStyles", true);
 // convert data into json format
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Limit JSON payload size
 // Static file
 app.use(express.static("public"));
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' })); // Limit URL-encoded payload size
 //use EJS as the view engine
 app.set("view engine", "ejs");
+app.set("views", "./views");
 
 app.get("/", (req, res) => {
-  res.render("home");
+  res.render("home", { 
+    messages: messages,
+    title: "Corporate Gifts and Promotional Products | Nexus Plater UAE",
+    description: "Nexus Plater provides high-quality corporate gifts and promotional products in UAE with fast turnaround and competitive pricing. Custom branded merchandise, employee gifts, and promotional items.",
+    canonical: "/"
+  });
 });
+
 app.get("/home", (req, res) => {
-  res.render("home");
-});
-app.get("/catalog-2", (req, res) => {
-  res.render("catalog-2", { layout: "./layouts/layout-2.ejs" });
-});
-app.get("/catalog-3", (req, res) => {
-  res.render("catalog-3", { layout: "./layouts/layout-2.ejs" });
-});
-app.get("/catalog-4", (req, res) => {
-  res.render("catalog-4", { layout: "./layouts/layout-2.ejs" });
-});
-app.get("/sent-already", (req, res) => {
-  res.render("sent-already", { layout: "./layouts/layout-3.ejs" });
-});
-app.get("/sent-successfully", (req, res) => {
-  res.render("sent-successfully", { layout: "./layouts/layout-3.ejs" });
-});
-/*app.use(function (req, res, next) {
-  res.status(404).render("404", { layout: "./layouts/layout-3.ejs" });
-});*/
-
-const now = new Date();
-const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-const endOfToday = new Date(
-  now.getFullYear(),
-  now.getMonth(),
-  now.getDate() + 1
-);
-
-// Register User
-app.post("/signup", async (req, res) => {
-  const data = {
-    name: req.body.username,
-    password: req.body.password,
-  };
-
-  // Check if the username already exists in the database
-  const existingUser = await user_collection.findOne({ name: data.name });
-
-  if (existingUser) {
-    res.send("User already exists. Please choose a different username.");
-  } else {
-    // Hash the password using bcrypt
-    const saltRounds = 10; // Number of salt rounds for bcrypt
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-
-    data.password = hashedPassword; // Replace the original password with the hashed one
-
-    const userdata = await user_collection.insertMany(data);
-    console.log(userdata);
-  }
+  res.render("home", { 
+    messages: messages,
+    title: "Corporate Gifts and Promotional Products | Nexus Plater UAE",
+    description: "Nexus Plater provides high-quality corporate gifts and promotional products in UAE with fast turnaround and competitive pricing. Custom branded merchandise, employee gifts, and promotional items.",
+    canonical: "/home"
+  });
 });
 
-// Login user
-app.post("/login", async (req, res) => {
+// Success page with inquiry details
+app.get("/success", catchAsync(async (req, res, next) => {
   try {
-    const check = await user_collection.findOne({ name: req.body.username });
-    if (!check) {
-      res.send("User name cannot found");
+    const inquiryId = req.query.id;
+    let inquiry = null;
+    
+    if (inquiryId) {
+      inquiry = await inquiry_collection.findById(inquiryId);
     }
-    // Compare the hashed password from the database with the plaintext password
-    const isPasswordMatch = await bcrypt.compare(
-      req.body.password,
-      check.password
-    );
-    if (!isPasswordMatch) {
-      res.send("wrong Password");
-    } else {
-      res.render("home");
-    }
-  } catch {
-    res.send("wrong Details");
+    
+    res.render("success", { 
+      inquiry: inquiry,
+      messages: messages,
+      title: "Success - Inquiry Submitted | Nexus Plater",
+      description: "Your inquiry has been successfully submitted. Thank you for contacting Nexus Plater for your corporate gifts and promotional products needs.",
+      canonical: "/success",
+      layout: "layouts/minimal"
+    });
+  } catch (error) {
+    next(new AppError('Unable to load inquiry details', 500));
   }
+}));
+
+// Professional error page with query parameters
+app.get("/error", (req, res) => {
+  const statusCode = parseInt(req.query.status) || 500;
+  const message = req.query.message || 'An unexpected error occurred';
+  
+  const error = {
+    status: statusCode,
+    message: decodeURIComponent(message),
+    stack: process.env.NODE_ENV === 'development' ? req.query.stack : undefined
+  };
+  
+  res.status(statusCode).render("error", { 
+    error: error,
+    messages: messages,
+    title: `Error ${statusCode} | Nexus Plater`,
+    description: `We apologize for the inconvenience. An error occurred while processing your request. Please try again or contact us for assistance.`,
+    canonical: "/error",
+    layout: "layouts/minimal"
+  });
 });
+
+
+
+// Configure multer for handling multipart/form-data
+const upload = multer();
 
 // Submit Inquiry Form
-app.post("/submitInquiry", async (req, res) => {
+app.post("/submitInquiry", formSubmissionLimiter, upload.none(), catchAsync(async (req, res, next) => {
+  
+  // Server-side validation and sanitization FIRST
+  const validation = validateInquiryData(req.body);
+  
+  if (!validation.isValid) {
+    // Log validation error
+    logError(new AppError(`Validation failed: ${JSON.stringify(validation.errors)}`, 400), req);
+    
+    // Return JSON response for AJAX requests, HTML for regular form submissions
+    const isAjaxRequest = req.headers['x-requested-with'] === 'XMLHttpRequest' || 
+                         (req.headers.accept && req.headers.accept.includes('application/json')) ||
+                         req.headers['content-type']?.includes('multipart/form-data');
+    
+    if (isAjaxRequest) {
+      // AJAX request - return JSON
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: validation.errors
+      });
+    } else {
+      // Regular form submission - return HTML error page
+      const error = handleValidationError(validation.errors);
+      return next(error);
+    }
+  }
+
+  // Use ONLY sanitized data for database
   const data = {
-    name: req.body.name,
-    mobile: req.body.mobile,
-    email: req.body.email,
-    message: req.body.message,
-    isread: false, // Default value for isread
+    name: validation.sanitizedData.name,
+    mobile: validation.sanitizedData.mobile,
+    email: validation.sanitizedData.email,
+    message: validation.sanitizedData.message,
+    isRead: false, // Default value for isRead
     createDate: new Date(),
   };
 
-  // Check if the username already exists in the database
+  // Check if the mobile number already exists in the database for today
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  
   const existing = await inquiry_collection.findOne({
     mobile: data.mobile,
     createdAt: {
@@ -121,18 +169,47 @@ app.post("/submitInquiry", async (req, res) => {
   });
 
   if (existing) {
-    console.log("sent already!");
-    /*res.send("Already sent!");*/
-    res.render("sent-already", { layout: "./layouts/layout-3.ejs" });
+    
+    // Return appropriate response based on request type
+    const isAjaxRequest = req.headers['x-requested-with'] === 'XMLHttpRequest' || 
+                         (req.headers.accept && req.headers.accept.includes('application/json'));
+    
+    if (isAjaxRequest) {
+      return res.status(429).json({
+        success: false,
+        message: messages.error.rateLimitExceeded,
+        redirectUrl: "/error?status=429&message=" + encodeURIComponent(messages.error.rateLimitExceeded)
+      });
+    } else {
+      return res.redirect("/error?status=429&message=" + encodeURIComponent(messages.error.rateLimitExceeded));
+    }
   } else {
     const inquiryData = await inquiry_collection.insertMany(data);
-    console.log(inquiryData);
-    res.render("sent-successfully", { layout: "./layouts/layout-3.ejs" });
+    
+    // Return appropriate response based on request type
+    const isAjaxRequest = req.headers['x-requested-with'] === 'XMLHttpRequest' || 
+                         (req.headers.accept && req.headers.accept.includes('application/json'));
+    
+    if (isAjaxRequest) {
+      return res.status(201).json({
+        success: true,
+        message: messages.success.inquirySubmitted,
+        redirectUrl: `/success?id=${inquiryData[0]._id}`,
+        inquiryId: inquiryData[0]._id
+      });
+    } else {
+      return res.redirect(`/success?id=${inquiryData[0]._id}`);
+    }
   }
-});
+}));
+
+// Handle 404 errors for all routes
+app.use(notFound);
+
+// Global error handling middleware (must be last)
+app.use(errorHandler);
 
 // Define Port for Application
 const port = process.env.PORT | 5000;
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
 });

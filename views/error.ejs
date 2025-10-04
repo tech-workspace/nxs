@@ -1,0 +1,49 @@
+<article class="post featured">
+  <header class="major">
+    <div class="error-icon">
+      <% if (error.status == 404) { %>
+        🔍
+      <% } else if (error.status == 400) { %>
+        ⚠️
+      <% } else if (error.status == 429) { %>
+        🚫
+      <% } else { %>
+        ❌
+      <% } %>
+    </div>
+    <h2><%= error.status || '500' %></h2>
+    <p>
+      <% if (error.status == 404) { %>
+        <%= messages.error.pageNotFoundTitle %>
+      <% } else if (error.status == 400) { %>
+        <%= messages.error.badRequestTitle %>
+      <% } else if (error.status == 429) { %>
+        <%= messages.error.tooManyRequestsTitle %>
+      <% } else if (error.status == 500) { %>
+        <%= messages.error.internalServerErrorTitle %>
+      <% } else { %>
+        <%= messages.error.genericErrorTitle %>
+      <% } %>
+    </p>
+  </header>
+  
+  <div class="content">
+    <p><%= error.message || messages.error.genericErrorMessage %></p>
+    
+    <% if (process.env.NODE_ENV === 'development' && error.stack) { %>
+      <div class="error-details">
+        <strong><%= messages.error.errorCode %>:</strong> <%= error.status || '500' %><br>
+        <strong><%= messages.error.stackTrace %>:</strong><br>
+        <pre><%= error.stack %></pre>
+      </div>
+    <% } %>
+  </div>
+  
+  <ul class="actions special">
+    <li><a href="/" class="button large"><%= messages.navigation.backToHome %></a></li>
+  </ul>
+  
+  <div class="contact-info">
+    <p><%= messages.error.helpMessage %> <a href="mailto:<%= messages.contact.email %>"><%= messages.contact.email %></a></p>
+  </div>
+</article>

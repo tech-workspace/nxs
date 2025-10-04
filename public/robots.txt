@@ -1,4 +1,12 @@
 User-agent: *
-Disallow: /private/
 Allow: /
+Disallow: /success
+Disallow: /error
+Disallow: /node_modules/
+Disallow: /src/
+
+# Sitemap
 Sitemap: https://www.nexusplater.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= typeof title !== 'undefined' ? title : 'Corporate Gifts and Promotional Products | Nexus Plater UAE' %></title>
+    <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Nexus Plater provides high-quality corporate gifts and promotional products in UAE with fast turnaround and competitive pricing. Custom branded merchandise, employee gifts, and promotional items.' %>">
+    <meta name="keywords" content="corporate gifts UAE, promotional products, branded merchandise, employee gifts, promotional items, custom gifts, business gifts, Abu Dhabi, Dubai, UAE">
+    <meta name="author" content="Nexus Plater">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.nexusplater.com/">
+    <meta property="og:title" content="Corporate Gifts and Promotional Products | Nexus Plater UAE">
+    <meta property="og:description" content="High-quality corporate gifts and promotional products in UAE with fast turnaround and competitive pricing. Custom branded merchandise and employee gifts.">
+    <meta property="og:image" content="https://www.nexusplater.com/images/logo-b.jpg">
+    <meta property="og:site_name" content="Nexus Plater">
+    <meta property="og:locale" content="en_AE">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.nexusplater.com/">
+    <meta property="twitter:title" content="Corporate Gifts and Promotional Products | Nexus Plater UAE">
+    <meta property="twitter:description" content="High-quality corporate gifts and promotional products in UAE with fast turnaround and competitive pricing.">
+    <meta property="twitter:image" content="https://www.nexusplater.com/images/logo-b.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.nexusplater.com<%= typeof canonical !== 'undefined' ? canonical : '' %>">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/logo-icon.png" />
+    <link rel="apple-touch-icon" href="/images/logo-icon.png" />
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/main.css" />
+    <noscript><link rel="stylesheet" href="/css/noscript.css" /></noscript>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Nexus Plater",
+        "alternateName": "NexusPlater",
+        "url": "https://www.nexusplater.com",
+        "logo": "https://www.nexusplater.com/images/logo-icon.png",
+        "image": [
+          "https://www.nexusplater.com/images/logo-b.jpg",
+          "https://www.nexusplater.com/images/giftssupplier-catalog-cover.png"
+        ],
+        "description": "Nexus Plater provides high-quality corporate gifts and promotional products in the UAE with fast turnaround and competitive pricing. We specialize in custom branded merchandise, employee gifts, and promotional items for businesses across the United Arab Emirates.",
+        "telephone": "+971502878009",
+        "email": "info@nexusplater.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Ad Difaf St., Al Reem Island",
+          "addressLocality": "Abu Dhabi",
+          "addressRegion": "Abu Dhabi",
+          "addressCountry": "AE",
+          "postOfficeBoxNumber": "109240"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "24.4539",
+          "longitude": "54.3773"
+        },
+        "areaServed": [
+          {
+            "@type": "Country",
+            "name": "United Arab Emirates"
+          },
+          {
+            "@type": "City",
+            "name": "Abu Dhabi"
+          },
+          {
+            "@type": "City",
+            "name": "Dubai"
+          }
+        ],
+        "serviceArea": {
+          "@type": "GeoCircle",
+          "geoMidpoint": {
+            "@type": "GeoCoordinates",
+            "latitude": "24.4539",
+            "longitude": "54.3773"
+          },
+          "geoRadius": "100000"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "09:00",
+            "closes": "17:00"
+          }
+        ],
+        "priceRange": "$$",
+        "paymentAccepted": "Cash, Credit Card, Bank Transfer",
+        "currenciesAccepted": "AED, USD",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Corporate Gifts and Promotional Products",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Corporate Gifts"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Promotional Products"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Branded Merchandise"
+              }
+            }
+          ]
+        },
+        "sameAs": [
+          "https://www.facebook.com/nexusplater",
+          "https://www.instagram.com/nexusplater",
+          "https://www.linkedin.com/in/nexusplater",
+          "https://wa.me/message/KFVWSJUR56XYJ1"
+        ],
+        "foundingDate": "2020",
+        "founder": {
+          "@type": "Person",
+          "name": "Nexus Plater Team"
+        }
+      }
+    </script>
+  </head>
+  <body class="is-preload">
+    <!-- Start Wrapper -->
+    <div id="wrapper" class="fade-in">
+      <%- include('../partials/header.ejs') %> <%- body %> <%-
+      include('../partials/footer.ejs') %>
+    </div>
+    <!-- End Wrapper -->
+  </body>
+
+  <!-- Start Scripts -->
+  <script src="/js/enhanced-passive-fix.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.scrollex.min.js"></script>
+  <script src="/js/jquery.scrolly.min.js"></script>
+  <script src="/js/browser.min.js"></script>
+  <script src="/js/breakpoints.min.js"></script>
+  <script src="/js/util.js"></script>
+  <script src="/js/main.js"></script>
+
+  <!-- End Scripts -->
+</html>
