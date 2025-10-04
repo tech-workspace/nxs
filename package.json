@@ -4,7 +4,7 @@
   "description": "Nexus Plater - Corporate Gifts and Promotional Products UAE",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node index.js",
+    "start": "node index.js",
     "dev": "NODE_ENV=development node index.js",
     "build": "echo 'No build step required'",
     "postinstall": "echo 'Dependencies installed successfully'"

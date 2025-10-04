@@ -18,3 +18,6 @@ coverage/
 *.swp
 *.swo
 *~
+.cache
+.npm
+.npmrc
