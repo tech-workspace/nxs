@@ -1,9 +1,17 @@
 {
+  "name": "nexus-plater",
+  "version": "1.0.0",
+  "description": "Nexus Plater - Corporate Gifts and Promotional Products UAE",
+  "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node index.js",
+    "build": "echo 'No build step required'",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "engines": {
-    "node": "18.16.0"
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -16,8 +24,18 @@
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "jquery": "^3.7.1",
-    "jsdom": "^27.0.0",
+    "jsdom": "^23.0.1",
     "mongoose": "^7.8.7",
     "multer": "^2.0.2"
-  }
+  },
+  "keywords": [
+    "corporate-gifts",
+    "promotional-products",
+    "uae",
+    "abudhabi",
+    "dubai",
+    "branded-merchandise"
+  ],
+  "author": "Nexus Plater",
+  "license": "MIT"
 }

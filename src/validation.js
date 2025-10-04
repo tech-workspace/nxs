@@ -4,8 +4,25 @@ const { JSDOM } = require('jsdom');
 const messages = require('./messages');
 
 // Create DOMPurify instance for server-side sanitization
-const window = new JSDOM('').window;
-const DOMPurify = createDOMPurify(window);
+let DOMPurify;
+try {
+  const window = new JSDOM('').window;
+  DOMPurify = createDOMPurify(window);
+} catch (error) {
+  // Fallback for environments where jsdom might not work properly
+  console.warn('JSDOM initialization failed, using basic sanitization:', error.message);
+  DOMPurify = {
+    sanitize: (input) => {
+      if (!input || typeof input !== 'string') return '';
+      // Basic XSS protection - remove script tags and dangerous attributes
+      return input
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+        .replace(/on\w+="[^"]*"/gi, '')
+        .replace(/javascript:/gi, '');
+    }
+  };
+}
 
 /**
  * Sanitize input to prevent XSS attacks
