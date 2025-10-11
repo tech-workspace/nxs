@@ -51,7 +51,7 @@ const InquirySchema = new mongoose.Schema(
           
           return false;
         },
-        message: (props) => `${props.value} is not a valid UAE mobile number! Please use formats like 0501234567, 0568863388, or +971501234567`,
+        message: (props) => `${props.value} is not a valid UAE mobile number! Please use formats like 0501234567, or +971501234567`,
       },
     },
     email: {
