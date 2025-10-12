@@ -93,7 +93,10 @@ const helmetConfig = helmet({
         "https:",
         "blob:"
       ],
-      connectSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+        "https://apigateway.up.railway.app" // Allow connections to visit tracking API
+      ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],

@@ -758,3 +758,160 @@
     }
   };
 })();
+
+// Visit Tracking Integration
+(function() {
+  'use strict';
+  
+  const VISIT_API_URL = 'https://apigateway.up.railway.app/v1/visits';
+  const SOURCE_SYSTEM_CONST = 'NEXUS_WEBSITE';
+  const DEBUG_MODE = false; // Set to true for debugging
+  
+  /**
+   * Debug log helper
+   */
+  function debugLog(message, data) {
+    if (DEBUG_MODE) {
+      console.log('[Visit Tracking]', message, data || '');
+    }
+  }
+  
+  /**
+   * Generate or retrieve session ID
+   * @returns {string} Session ID
+   */
+  function getSessionId() {
+    let sessionId = sessionStorage.getItem('nexus_session_id');
+    
+    if (!sessionId) {
+      // Generate new session ID
+      sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15);
+      sessionStorage.setItem('nexus_session_id', sessionId);
+      debugLog('New session ID created:', sessionId);
+    } else {
+      debugLog('Existing session ID:', sessionId);
+    }
+    
+    return sessionId;
+  }
+  
+  /**
+   * Track visit to the API
+   * @param {string} pageUrl - The current page URL
+   */
+  function trackVisit(pageUrl) {
+    try {
+      const sessionId = getSessionId();
+      const currentUrl = pageUrl || window.location.href;
+      
+      // Prepare payload
+      const payload = {
+        sourceSystemConst: SOURCE_SYSTEM_CONST,
+        sessionId: sessionId,
+        metadata: {
+          pageUrl: currentUrl,
+          pagePath: window.location.pathname,
+          pageHash: window.location.hash,
+          referrer: document.referrer || 'direct',
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          screenResolution: window.screen.width + 'x' + window.screen.height,
+          language: navigator.language
+        }
+      };
+      
+      debugLog('Tracking visit:', payload);
+      
+      // Send visit data to API using fetch with error handling
+      fetch(VISIT_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload),
+        mode: 'cors',
+        cache: 'no-cache'
+      })
+      .then(function(response) {
+        debugLog('API Response Status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error('HTTP error! status: ' + response.status);
+        }
+        
+        return response.json();
+      })
+      .then(function(data) {
+        debugLog('Visit tracked successfully:', data);
+        
+        if (data.success && data.data && data.data.visit) {
+          // Store visit ID for future reference
+          sessionStorage.setItem('last_visit_id', data.data.visit._id || '');
+          sessionStorage.setItem('last_visit_time', new Date().toISOString());
+        }
+      })
+      .catch(function(error) {
+        debugLog('Error tracking visit:', error);
+        // Fail silently - don't disrupt user experience
+      });
+      
+    } catch (error) {
+      debugLog('Exception in trackVisit:', error);
+    }
+  }
+  
+  /**
+   * Debounce function to prevent too many calls
+   */
+  function debounce(func, wait) {
+    var timeout;
+    return function executedFunction() {
+      var context = this;
+      var args = arguments;
+      var later = function() {
+        timeout = null;
+        func.apply(context, args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+  
+  /**
+   * Track navigation events
+   */
+  function initVisitTracking() {
+    debugLog('Initializing visit tracking...');
+    
+    // Track initial page load with a small delay to ensure everything is ready
+    setTimeout(function() {
+      debugLog('Tracking initial page load');
+      trackVisit(window.location.href);
+    }, 1000);
+    
+    // Track hash changes (debounced to prevent multiple calls)
+    var debouncedHashTrack = debounce(function() {
+      debugLog('Hash changed to:', window.location.hash);
+      trackVisit(window.location.href);
+    }, 500);
+    
+    window.addEventListener('hashchange', debouncedHashTrack);
+    
+    // Track browser navigation (back/forward buttons)
+    window.addEventListener('popstate', function() {
+      debugLog('Popstate event triggered');
+      trackVisit(window.location.href);
+    });
+    
+    debugLog('Visit tracking initialized successfully');
+  }
+  
+  // Initialize visit tracking when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVisitTracking);
+  } else {
+    // DOM already loaded
+    initVisitTracking();
+  }
+})();
