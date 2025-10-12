@@ -210,6 +210,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Define Port for Application
-const port = process.env.PORT | 5000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
+  // Server started successfully (no console.log for production)
 });
