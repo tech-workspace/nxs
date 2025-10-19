@@ -8,6 +8,11 @@
 - ✅ **Fixed Content Security Policy (CSP)** - Added API domain to `connectSrc`
 - ✅ Added 1-second delay for initial page load tracking
 - ✅ Added debouncing to prevent duplicate calls
+- ✅ **Fixed duplicate visit tracking** - Added multiple safeguards:
+  - Prevents initialization from running multiple times
+  - Prevents initial page load from being tracked twice
+  - Prevents duplicate API calls within 2 seconds for same URL
+  - Prevents hash change and popstate events during initial load
 - ✅ Improved error handling with try-catch blocks
 - ✅ Added more metadata (screen resolution, language, etc.)
 - ✅ Removed link click tracking to prevent excessive API calls
@@ -132,12 +137,16 @@ curl -X POST https://apigateway.up.railway.app/v1/visits \
 3. Check console for error messages
 4. Look for HTTP status codes
 
-### **Problem: Too many API calls**
+### **Problem: Too many API calls / Duplicate visits**
 
-**Solution: Debouncing is enabled**
+**Solution: Multiple safeguards enabled**
 - Hash changes are debounced (500ms delay)
 - Initial load has 1-second delay
-- Only hash changes and popstate events trigger tracking
+- Prevents initialization from running multiple times
+- Prevents initial load from being tracked twice
+- Prevents duplicate API calls within 2 seconds for same URL
+- Skips hash change and popstate events during initial load
+- Only hash changes and popstate events trigger tracking after initial load
 
 ## 📊 Verifying Data
 
