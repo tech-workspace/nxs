@@ -105,6 +105,7 @@ const helmetConfig = helmet({
     },
   },
   crossOriginEmbedderPolicy: false, // Disable if causing issues with your assets
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow cross-origin requests for static assets
   hsts: {
     maxAge: 31536000,
     includeSubDomains: true,

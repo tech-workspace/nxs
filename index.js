@@ -4,6 +4,7 @@ const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const path = require("path");
 const multer = require("multer");
+const cors = require("cors");
 const inquiry_collection = require("./src/inquiry-config");
 const { validateInquiryData } = require("./src/validation");
 const messages = require("./src/messages");
@@ -41,6 +42,29 @@ app.set("layout extractScripts", true);
 app.set("layout extractStyles", true);
 // convert data into json format
 app.use(express.json({ limit: '10mb' })); // Limit JSON payload size
+
+// CORS configuration for static files (allow images to be used in emails)
+app.use('/images', cors({
+  origin: '*', // Allow all origins for images
+  methods: ['GET'],
+  credentials: false
+}));
+app.use('/css', cors({
+  origin: '*', // Allow all origins for CSS
+  methods: ['GET'],
+  credentials: false
+}));
+app.use('/js', cors({
+  origin: '*', // Allow all origins for JS
+  methods: ['GET'],
+  credentials: false
+}));
+app.use('/webfonts', cors({
+  origin: '*', // Allow all origins for fonts
+  methods: ['GET'],
+  credentials: false
+}));
+
 // Static file
 app.use(express.static("public"));
 
