@@ -795,6 +795,11 @@
     return sessionId;
   }
   
+  // Track last visit time to prevent duplicates
+  var lastVisitTime = 0;
+  var lastVisitUrl = '';
+  var MIN_VISIT_INTERVAL = 2000; // Minimum 2 seconds between visits to same URL
+  
   /**
    * Track visit to the API
    * @param {string} pageUrl - The current page URL
@@ -803,6 +808,19 @@
     try {
       const sessionId = getSessionId();
       const currentUrl = pageUrl || window.location.href;
+      const now = Date.now();
+      
+      // Prevent duplicate tracking within MIN_VISIT_INTERVAL for same URL
+      if (currentUrl === lastVisitUrl && (now - lastVisitTime) < MIN_VISIT_INTERVAL) {
+        debugLog('Skipping duplicate visit tracking (too soon)', {
+          url: currentUrl,
+          timeSinceLastVisit: now - lastVisitTime
+        });
+        return;
+      }
+      
+      lastVisitTime = now;
+      lastVisitUrl = currentUrl;
       
       // Prepare payload
       const payload = {
@@ -878,20 +896,40 @@
     };
   }
   
+  // Global flag to prevent multiple initializations
+  var isVisitTrackingInitialized = false;
+  
   /**
    * Track navigation events
    */
   function initVisitTracking() {
+    // Prevent multiple initializations
+    if (isVisitTrackingInitialized) {
+      debugLog('Visit tracking already initialized, skipping...');
+      return;
+    }
+    
+    isVisitTrackingInitialized = true;
     debugLog('Initializing visit tracking...');
+    
+    var hasTrackedInitialLoad = false;
     
     // Track initial page load with a small delay to ensure everything is ready
     setTimeout(function() {
-      debugLog('Tracking initial page load');
-      trackVisit(window.location.href);
+      if (!hasTrackedInitialLoad) {
+        debugLog('Tracking initial page load');
+        trackVisit(window.location.href);
+        hasTrackedInitialLoad = true;
+      }
     }, 1000);
     
     // Track hash changes (debounced to prevent multiple calls)
     var debouncedHashTrack = debounce(function() {
+      // Skip tracking if this is the initial load (within first 2 seconds)
+      if (!hasTrackedInitialLoad) {
+        debugLog('Skipping hash change - initial load not tracked yet');
+        return;
+      }
       debugLog('Hash changed to:', window.location.hash);
       trackVisit(window.location.href);
     }, 500);
@@ -900,6 +938,11 @@
     
     // Track browser navigation (back/forward buttons)
     window.addEventListener('popstate', function() {
+      // Skip popstate during initial load
+      if (!hasTrackedInitialLoad) {
+        debugLog('Skipping popstate - initial load not tracked yet');
+        return;
+      }
       debugLog('Popstate event triggered');
       trackVisit(window.location.href);
     });
