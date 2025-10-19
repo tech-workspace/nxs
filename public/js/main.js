@@ -767,6 +767,18 @@
   const SOURCE_SYSTEM_CONST = 'NEXUS_WEBSITE';
   const DEBUG_MODE = false; // Set to true for debugging
   
+  // Check if we're in production mode
+  const isProduction = window.location.hostname !== 'localhost' && 
+                       window.location.hostname !== '127.0.0.1' &&
+                       !window.location.hostname.includes('192.168') &&
+                       !window.location.hostname.includes('local');
+  
+  // Log environment mode
+  if (DEBUG_MODE) {
+    console.log('[Visit Tracking] Environment:', isProduction ? 'PRODUCTION' : 'DEVELOPMENT');
+    console.log('[Visit Tracking] Hostname:', window.location.hostname);
+  }
+  
   /**
    * Debug log helper
    */
@@ -806,6 +818,15 @@
    */
   function trackVisit(pageUrl) {
     try {
+      // Skip API calls in development mode
+      if (!isProduction) {
+        debugLog('Skipping visit tracking in DEVELOPMENT mode', {
+          url: pageUrl || window.location.href,
+          hostname: window.location.hostname
+        });
+        return;
+      }
+      
       const sessionId = getSessionId();
       const currentUrl = pageUrl || window.location.href;
       const now = Date.now();

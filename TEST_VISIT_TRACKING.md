@@ -13,6 +13,9 @@
   - Prevents initial page load from being tracked twice
   - Prevents duplicate API calls within 2 seconds for same URL
   - Prevents hash change and popstate events during initial load
+- ✅ **Environment detection** - Only tracks visits in PRODUCTION mode:
+  - Skips API calls on localhost, 127.0.0.1, 192.168.x.x
+  - Only makes API calls on production domains (nexusplater.up.railway.app)
 - ✅ Improved error handling with try-catch blocks
 - ✅ Added more metadata (screen resolution, language, etc.)
 - ✅ Removed link click tracking to prevent excessive API calls
@@ -30,9 +33,17 @@ const DEBUG_MODE = false; // Change to true
 const DEBUG_MODE = true; // Enable debugging
 ```
 
-### 3. **What Gets Tracked:**
+### 3. **Environment Detection:**
+The visit tracking automatically detects the environment:
 
-#### **Events:**
+- **DEVELOPMENT** (localhost, 127.0.0.1, 192.168.x.x, *.local) - API calls are SKIPPED
+- **PRODUCTION** (nexusplater.up.railway.app or custom domain) - API calls are MADE
+
+This prevents cluttering your analytics with development/testing visits.
+
+### 4. **What Gets Tracked:**
+
+#### **Events (PRODUCTION ONLY):**
 - ✅ Initial page load (after 1 second)
 - ✅ Hash changes (e.g., `#catalog`, `#about`, `#contact`)
 - ✅ Browser back/forward button clicks
@@ -68,20 +79,20 @@ const DEBUG_MODE = true;
 2. Navigate to `http://localhost:5000`
 3. Open Developer Tools (F12)
 4. Go to Console tab
-5. You should see logs like:
+5. With DEBUG_MODE enabled, you should see:
    ```
+   [Visit Tracking] Environment: DEVELOPMENT
+   [Visit Tracking] Hostname: localhost
    [Visit Tracking] Initializing visit tracking...
-   [Visit Tracking] Tracking initial page load
-   [Visit Tracking] New session ID created: sess_1704987654321_abc123xyz
-   [Visit Tracking] Tracking visit: {sourceSystemConst: "NEXUS_WEBSITE", ...}
-   [Visit Tracking] API Response Status: 200
-   [Visit Tracking] Visit tracked successfully: {success: true, ...}
+   [Visit Tracking] Skipping visit tracking in DEVELOPMENT mode
    ```
+
+**Note:** API calls are NOT made in development mode. You'll only see tracking happen on production domains.
 
 ### **3. Test Navigation**
 1. Click on navigation links (Catalog, About, Contact)
-2. Watch the console for new tracking logs
-3. Each hash change should trigger a new visit record
+2. Watch the console - in development mode, tracking is skipped
+3. In production, each hash change will trigger a new visit record
 
 ### **4. Check Session Storage**
 In Developer Tools Console, run:
