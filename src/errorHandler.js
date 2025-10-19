@@ -130,7 +130,16 @@ const catchAsync = (fn) => {
  * Handle 404 errors
  */
 const notFound = (req, res, next) => {
-  // Redirect to error page with 404 status
+  // Check if the request is for a static file (has a file extension)
+  const path = req.path;
+  const hasFileExtension = /\.[a-zA-Z0-9]+$/.test(path);
+  
+  // For static files (images, css, js, etc.), return a simple 404 without redirect
+  if (hasFileExtension) {
+    return res.status(404).send('File not found');
+  }
+  
+  // For page routes, redirect to error page with 404 status
   return res.redirect(`/error?status=404&message=${encodeURIComponent('The page you are looking for does not exist.')}`);
 };
 
